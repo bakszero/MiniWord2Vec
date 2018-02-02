@@ -31,7 +31,7 @@ class SkipGram:
 
 	def softmax(self, theta):
 		#No need to specify axis since it is 1xV dim
-		return (np.exp(theta) / np.sum(np.exp(theta)))
+		return (np.exp(theta - np.max(theta)) / np.sum(np.exp(theta- np.max(theta)), axis = 0))
 
 
 	def build_skipgram_model(self):
@@ -94,7 +94,7 @@ class CBoW:
 
 	def softmax(self, theta):
 		#No need to specify axis since it is 1xV dim
-		return (np.exp(theta) / np.sum(np.exp(theta)))
+		return (np.exp(theta - np.max(theta)) / np.sum(np.exp(theta- np.max(theta)), axis = 0))
 
 
 	def build_cbow_model(self):
@@ -123,10 +123,10 @@ class CBoW:
 
 				#Calculate dL/dW
 
-				dw_hidden = np.mean([np.outer(word, np.dot(W2, e)) for word in self.X_train[i]], axis=0)
+				dw_hidden = np.mean([np.outer(word, np.dot(W2, err) for word in self.X_train[i]], axis=0)
 
 				#Calculate dL/dW'
-				dw_output = np.outer(h,e)
+				dw_output = np.outer(h,err)
 
 				#Gradient descent
 				self.w_hidden += -self.lr * dw_hidden
