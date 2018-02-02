@@ -91,7 +91,7 @@ class CBoW:
 		return (1.0/ (1+ np.exp(-theta)))
 
 	def softmax(self, theta):
-		#No need to specify axis since it is 1xV dim
+		#No need to specify axis since it is vx1 dim , but do it nevertheless.
 		return (np.exp(theta - np.max(theta)) / np.sum(np.exp(theta- np.max(theta)), axis = 0))
 
 
@@ -114,7 +114,6 @@ class CBoW:
 				pred = self.softmax(u)
 
 				#Backward propagation------
-				#http://www.claudiobellei.com/2018/01/06/backprop-word2vec/
 				#err_sum = np.zeros((self.vocab_size,1))
 
 				err = pred - self.onehot[Y_train[i]]
