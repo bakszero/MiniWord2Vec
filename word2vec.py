@@ -48,8 +48,6 @@ class SkipGram:
 				pred = self.softmax(output)
 
 				#Backward propagation------
-				#http://www.claudiobellei.com/2018/01/06/backprop-word2vec/
-				#Calculate EI_j
 				err_sum = np.zeros((self.vocab_size,1))
 
 				for word in self.Y_train[i]:
@@ -58,10 +56,10 @@ class SkipGram:
 				#err_sum/= self.vocab_size
 
 				#Calculate dL/dW
-				dw_hidden = np.outer(onehot(X_train[i]), np.dot(self.w_output,err_sum))
+				dw_hidden = np.outer(self.onehot(X_train[i]), np.dot(self.w_output,err_sum))
 
 				#Calculate dL/dW'
-				dw_output = np.outer(np.dot(self.w_hidden.T, onehot(X_train[i])), err_sum)
+				dw_output = np.outer(h, err_sum)
 
 				#Gradient descent
 				self.w_hidden += -self.lr * dw_hidden
@@ -108,7 +106,7 @@ class CBoW:
 				h = np.zeros((self.dim, 1))
 				for word in self.X_train[i]:
 					h += np.dot(w_hidden.T, self.onehot[word])
-				h/=self.vocab_size
+				h/=self.len(self.X_train[i])
 
 
 				#h = np.dot(self.w_hidden.T , onehot(X_train[i])
@@ -123,7 +121,7 @@ class CBoW:
 
 				#Calculate dL/dW
 
-				dw_hidden = np.mean([np.outer(word, np.dot(W2, err) for word in self.X_train[i]], axis=0)
+				dw_hidden = np.outer(x, np.dot(w_output, err))
 
 				#Calculate dL/dW'
 				dw_output = np.outer(h,err)
