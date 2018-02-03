@@ -2,6 +2,8 @@ import sys
 #import keras 
 from operator import itemgetter
 import math
+import numpy as np
+
 
 def remove_new_line(file, out):
 	with open(file, 'r') as f, open(out, 'w+') as g:
@@ -32,15 +34,17 @@ def compute_vocab(file):
 	sorted_vocab = sorted(vocab.items(), key = itemgetter(1))
 	#Also compute probabilities in text
 	prob_vocab =  {}
+	no_vocab={}
 	for key, value in sorted_vocab:
-		print ("%s %s" % (key, value)	)
+		#print ("%s %s" % (key, value))
 
 		prob_vocab[key] = (math.sqrt( 10000* float(value)/j ) + 1) * (float(1.0)/(10000* float(value)/j))
+		no_vocab[key] = float(value)
 
 
 	sorted_prob_vocab =  sorted(prob_vocab.items(), key = itemgetter(1))
-	for key, value in sorted_prob_vocab:
-		print ("%s %s" % (key, value))
+	#for key, value in sorted_prob_vocab:
+		#print ("%s %s" % (key, value))
 
 
 	print ()
@@ -49,13 +53,81 @@ def compute_vocab(file):
 	print ("Unique: ",len(vocab))
 	print ("Total words: ", j)
 
+	return prob_vocab, no_vocab
 
 
-	
+def make_training_data(file, prob_vocab,no_vocab,n=3 ):
+
+	text = []
+	with open(file ,'r') as f:
+		for line in f:
+			text = line.split()
+
+	context = {}
+	l=0
+	for i in range(n+1, len(text)-n):
+		if (no_vocab[text[i]] > 50):
+			continue
+		l+=1
+		context[text[i]] = [text[j] for j in range(i-n, i+n+1) if (j!=i and no_vocab[text[j]] <= 50)]
+
+	print ("LENGTH AFTER REMOVING", l)
+
+	with open('./data/skipgram.tsv','w+') as o:
+		for key, value in context.items():
+			o.write('%s\t' % (key))
+			for i, word in enumerate(value):
+				o.write('%s' % (word))
+				if (i!=(len(value)-1)):
+					o.write(',')
+			o.write('\n')
+			
+
+
+	with open('./data/cbow.tsv','w+') as o:
+		for key, value in context.items():
+			for i, word in enumerate(value):
+				o.write('%s' % (word))
+				if (i!=(len(value)-1)):
+						o.write(',')
+			o.write('\t%s' % (key))
+			o.write('\n')
+
+
+	#Make word to integer encoding
+	int_to_words={}
+	words_to_int = {}
+	x=0
+	for key , value in context.items():
+		if key in words_to_int:
+			continue
+		x+=1
+		words_to_int[key] = x
+		#print (key, x)
+		int_to_words[x] = key
+
+	'''
+	PC hangs
+	#Make one-hot encoding
+	one_hot= {}
+
+	for key, value in words_to_int.items():
+		one_hot[key] =  np.zeros((len(int_to_words), 1))
+
+		#one_hot[key] = [0 for _ in range(len(int_to_words))]
+		one_hot[key][value] = 1
+		print (key, "encoded")
+
+	print (one_hot['of'])
+	'''
+
+			
+
 
 
 #remove_new_line(sys.argv[1], sys.argv[2])
 
-compute_vocab(sys.argv[1])
 
+prob_vocab , no_vocab = compute_vocab(sys.argv[1])
 
+make_training_data(sys.argv[1],  prob_vocab, no_vocab,  3)

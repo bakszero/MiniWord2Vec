@@ -4,15 +4,12 @@ import sys
 import argparse
 
 
-class DataProcessor:
-	def __init__(self, )
 
 
 class SkipGram:
-	def __init__(self, context, onehot, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
+	def __init__(self, onehot, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
 		np.random.seed(1332)
-		self.context = context
 		self.X_train =  X_train
 		self.Y_train = Y_train
 		self.vocab_size = X_train.shape[0]
@@ -36,7 +33,8 @@ class SkipGram:
 
 	def build_skipgram_model(self):
 		#Iterate over epochs
-		for _ in range(self.epochs):
+		for k in range(self.epochs):
+			print ("We are at epoch : ", k)
 
 			#For each training example
 			for i in range(self.vocab_size):
@@ -69,11 +67,10 @@ class SkipGram:
 
 
 class CBoW:
-	def __init__(self, context, onehot, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
+	def __init__(self, onehot, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
 		#Input will be flipped, but we maintain 2 different classes for cleaner comparison of the models later!
 		np.random.seed(1332)
-		self.context = context
 		self.X_train =  X_train
 		self.Y_train = Y_train
 		self.vocab_size = X_train.shape[0]
@@ -97,8 +94,8 @@ class CBoW:
 
 	def build_cbow_model(self):
 		#Iterate over epochs
-		for _ in range(self.epochs):
-
+		for k in range(self.epochs):
+			print ("We are at epoch : ", k)
 			#For each training example
 			for i in range(self.vocab_size):
 
@@ -134,6 +131,21 @@ class CBoW:
 def train(inp, out, method, dimensions, lr, win, epochs):
 
 	#Preprocess the file
+	#Create vocab and one-hot
+
+	with open(inp, 'r') as f:
+	#if skipgram file
+	if (method == 1):
+		X = []
+		Y= []
+		with open (inp , 'r') as f:
+			for line in f:
+				X.append(line.split('\t')[0])
+				Y.append((line.split('\t')[1]).split(','))
+
+		model = SkipGram()
+
+
 
 
 
