@@ -58,7 +58,7 @@ class CBoW:
 				#Backward propagation------
 				#err_sum = np.zeros((self.vocab_size,1))
 
-				err = pred - self.one_hot[self.words_to_int(Y_train[i])]
+				err = pred - self.one_hot[self.words_to_int(self.Y_train[i])]
 
 				#Calculate dL/dW
 
@@ -85,8 +85,8 @@ def train(inp, out, dimensions, lr, win, epochs):
 	Y = []
 	
 	for i, val in enumerate(data_raw):
-		X.append(val[0])
-		Y.append(val[1:])
+		X.append(val[1:])
+		Y.append(val[0])
 
 
 	model = CBoW( words_to_int, int_to_words, X, Y,  lr, dimensions, epochs, True)
