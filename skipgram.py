@@ -7,12 +7,14 @@ import argparse
 
 
 class SkipGram:
-	def __init__(self, onehot, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
+	def __init__(self, words_to_int, int_to_words, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
 		np.random.seed(1332)
+		self.words_to_int = words_to_int
+		self.int_to_words = int_to_words
 		self.X_train =  X_train
 		self.Y_train = Y_train
-		self.vocab_size = X_train.shape[0]
+		self.vocab_size = len(words_to_int)
 		self.lr = lr #Learning rate
 		self.dim = dim #Dimensions for our trained vectors
 		self.epochs = epochs
@@ -30,6 +32,8 @@ class SkipGram:
 		#No need to specify axis since it is 1xV dim
 		return (np.exp(theta - np.max(theta)) / np.sum(np.exp(theta- np.max(theta)), axis = 0))
 
+	def one_hot(self, n):
+		return (np.eye(self.vocab_size)[n]).reshape(self.vocab_size,1)
 
 	def build_skipgram_model(self):
 		#Iterate over epochs
@@ -65,22 +69,24 @@ class SkipGram:
 
 
 
-
-
 def train(inp, out, dimensions, lr, win, epochs):
 
 	#Preprocess the file
-	#Create vocab and one-hot
+	prob_vocab , no_vocab = data_utils.compute_vocab(inp)
+	words_to_int, int_to_words, data_raw = data_utils.make_training_data(inp,  prob_vocab, no_vocab,  win)
 
-
+	
+	#Create training data
 	X = []
 	Y = []
-	with open (inp , 'r') as f:
-		for line in f:
-			X.append(line.split('\t')[0])
-			Y.append((line.split('\t')[1]).split(','))
+	
+	for i, val in enumerate(data_raw):
+		X.append(val[0])
+		Y.append(val[1:])
 
-	model = SkipGram()
+
+	model = SkipGram( words_to_int, int_to_words, X, Y,  lr, dimensions, epochs, True)
+	model.build_skipgram_model(	)
 
 
 

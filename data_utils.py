@@ -63,16 +63,23 @@ def make_training_data(file, prob_vocab,no_vocab,n=3 ):
 		for line in f:
 			text = line.split()
 
-	context = {}
+	
+	data_raw = []
+
 	l=0
 	for i in range(n+1, len(text)-n):
-		if (no_vocab[text[i]] > 50):
+		if (no_vocab[text[i]] <  15):
 			continue
 		l+=1
-		context[text[i]] = [text[j] for j in range(i-n, i+n+1) if (j!=i and no_vocab[text[j]] <= 50)]
+		temp_context = [text[j] for j in range(i-n, i+n+1) if (j!=i and no_vocab[text[j]] >= 15)]
+		temp_context.insert(0, text[i])
+		data_raw.append(temp_context)
 
-	print ("LENGTH AFTER REMOVING", l)
+	print ("Length after removing: ", len(data_raw))
 
+
+
+	'''
 	with open('./data/skipgram.tsv','w+') as o:
 		for key, value in context.items():
 			o.write('%s\t' % (key))
@@ -93,34 +100,40 @@ def make_training_data(file, prob_vocab,no_vocab,n=3 ):
 			o.write('\t%s' % (key))
 			o.write('\n')
 
-
+	'''
 	#Make word to integer encoding
 	int_to_words={}
 	words_to_int = {}
 	x=0
-	for key , value in context.items():
-		if key in words_to_int:
+
+
+	for i, val in enumerate(data_raw):
+		if (val[0] in words_to_int):
 			continue
 		x+=1
-		words_to_int[key] = x
-		#print (key, x)
-		int_to_words[x] = key
+		words_to_int[val[0]] = x
+		int_to_words[x] = val[0]
+
+	print ("Unique after removing: ", x)
+
+	#PC hangs
+	#Make one-hot encoding
+	#one_hot= {}
+	#nb_labels = len(int_to_words)
+
 
 	'''
-	PC hangs
-	#Make one-hot encoding
-	one_hot= {}
-
 	for key, value in words_to_int.items():
-		one_hot[key] =  np.zeros((len(int_to_words), 1))
+		one_hot[key] = np.eye(nb_labels)[value].reshape(nb_labels,1)
+		#one_hot[key] =  np.zeros((len(int_to_words), 1))
 
 		#one_hot[key] = [0 for _ in range(len(int_to_words))]
-		one_hot[key][value] = 1
-		print (key, "encoded")
+		#one_hot[key][value] = 1
+		print (key, "encoded", one_hot[key].shape)
 
 	print (one_hot['of'])
 	'''
-
+	return words_to_int, int_to_words, data_raw
 			
 
 
@@ -128,6 +141,6 @@ def make_training_data(file, prob_vocab,no_vocab,n=3 ):
 #remove_new_line(sys.argv[1], sys.argv[2])
 
 
-prob_vocab , no_vocab = compute_vocab(sys.argv[1])
+#prob_vocab , no_vocab = compute_vocab(sys.argv[1])
 
-make_training_data(sys.argv[1],  prob_vocab, no_vocab,  3)
+#make_training_data(sys.argv[1],  prob_vocab, no_vocab,  3)
