@@ -2,6 +2,7 @@ import numpy as np
 import sklearn
 import sys
 import argparse
+import data_utils	
 
 
 
@@ -11,6 +12,7 @@ class SkipGram:
 		
 		np.random.seed(1332)
 		self.words_to_int = words_to_int
+		self.model = words_to_int
 		self.int_to_words = int_to_words
 		self.X_train =  X_train
 		self.Y_train = Y_train
@@ -20,9 +22,9 @@ class SkipGram:
 		self.epochs = epochs
 		self.w_hidden = np.random.randn(self.vocab_size, self.dim)
 		self.w_output = np.random.randn(self.dim, self.vocab_size)
-		self.onehot = onehot
+		#self.onehot = onehot
 		#Uninitialised model as of now
-		self.model= {}
+		
 
 	def sigmoid(self, theta):
 
@@ -39,26 +41,30 @@ class SkipGram:
 		#Iterate over epochs
 		for k in range(self.epochs):
 			print ("We are at epoch : ", k)
-
+			print ()
+			print ("No. of training samples: ", len(self.X_train))
 			#For each training example
-			for i in range(self.vocab_size):
+			for i in range(len(self.X_train)):
 
 				#Forward propagation of the neural network-----
 				#Here X_train[i] is a Vx1 vector.
-				h = np.dot(self.w_hidden.T , self.onehot[X_train[i]])
+				h = np.dot(self.w_hidden.T , self.one_hot(self.words_to_int[self.X_train[i]]))
 				output = np.dot(self.w_output.T , h)
 				pred = self.softmax(output)
+				print ("Forward propagation done...",  i, k)
 
 				#Backward propagation------
 				err_sum = np.zeros((self.vocab_size,1))
 
 				for word in self.Y_train[i]:
-					err_sum += (pred - self.onehot(word))
+					err_sum += (pred - self.one_hot(self.words_to_int[word]))
 
 				#err_sum/= self.vocab_size
+				print ("Calculated error.." , i, k)
+
 
 				#Calculate dL/dW
-				dw_hidden = np.outer(self.onehot(X_train[i]), np.dot(self.w_output,err_sum))
+				dw_hidden = np.outer(self.one_hot(self.words_to_int[self.X_train[i]]), np.dot(self.w_output,err_sum))
 
 				#Calculate dL/dW'
 				dw_output = np.outer(h, err_sum)
@@ -67,6 +73,11 @@ class SkipGram:
 				self.w_hidden += -self.lr * dw_hidden
 				self.w_output += -self.lr * dw_output
 
+				print ("Gradient descent done.." , i, k)
+
+			#Save model after each epoch
+			for key, value in words_to_int.items():
+				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
 
 
 def train(inp, out, dimensions, lr, win, epochs):
@@ -86,21 +97,18 @@ def train(inp, out, dimensions, lr, win, epochs):
 
 
 	model = SkipGram( words_to_int, int_to_words, X, Y,  lr, dimensions, epochs, True)
-	model.build_skipgram_model(	)
+	model.build_skipgram_model()
 
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--train', help='Training file', dest='inp', default = './data/')
+parser.add_argument('-m','--model', help='Output model file', dest='out')
+parser.add_argument('-d', '--dim', help='Dimensionality of word embeddings', dest='dimensions', default=300, type=int)
+parser.add_argument('-r', '--rate', help='Learning rate', dest='lr', default=0.025, type=float)
+parser.add_argument('-w', '--window', help='Max window length', dest='win', default=3, type=int) 
+parser.add_argument('-e','--epochs', help='Number of training epochs', dest='epochs', default=1, type=int)
+args = parser.parse_args()
 
-
-if name == '__main__':
-	parser = argparse.ArgumentParser()
-    parser.add_argument('--train', help='Training file', dest='inp', required=True)
-    parser.add_argument('--model', help='Output model file', dest='out', required=True)
-    parser.add_argument('--dim', help='Dimensionality of word embeddings', dest='dimensions', default=300, type=int)
-    parser.add_argument('--rate', help='Learning rate', dest='lr', default=0.025, type=float)
-    parser.add_argument('--window', help='Max window length', dest='win', default=3, type=int) 
-    parser.add_argument('--epochs', help='Number of training epochs', dest='epochs', default=1, type=int)
-    args = parser.parse_args()
-
-    train(args.inp, args.out, args.dimensions, args.lr, args.win, args.epochs)
+train(args.inp, args.out, args.dimensions, args.lr, args.win, args.epochs)
 

@@ -48,7 +48,8 @@ class CBoW:
 				h = np.zeros((self.dim, 1))
 				for word in self.X_train[i]:
 					h += np.dot(self.w_hidden.T, self.one_hot(self.words_to_int[word]))
-				h/=len(self.X_train)
+				h/=len(self.X_train[i])
+				print ("Forward propagation done...",  i, k)
 
 
 				#h = np.dot(self.w_hidden.T , onehot(X_train[i])
@@ -58,7 +59,8 @@ class CBoW:
 				#Backward propagation------
 				#err_sum = np.zeros((self.vocab_size,1))
 
-				err = pred - self.one_hot[self.words_to_int(self.Y_train[i])]
+				err = pred - self.one_hot(self.words_to_int[self.Y_train[i]])
+				print ("Calculated error.." , i, k)
 
 				#Calculate dL/dW
 
@@ -70,6 +72,7 @@ class CBoW:
 				#Gradient descent
 				self.w_hidden += -self.lr * dw_hidden
 				self.w_output += -self.lr * dw_output
+				print ("Gradient descent done.." , i, k)
 
 
 
