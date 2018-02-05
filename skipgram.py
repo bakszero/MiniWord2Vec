@@ -1,16 +1,101 @@
 import numpy as np 
 import sklearn
+import math
 import sys
 import argparse
-import data_utils	
+from operator import itemgetter
 
 
+class DataProcessor:
+
+	def remove_new_line(self, file, out):
+		with open(file, 'r') as f, open(out, 'w+') as g:
+			for line in f:
+				temp =  line.replace('\n', ' ')
+				g.write(temp)
+		print ("Created merged dataset...\n")
+
+
+
+	def compute_vocab(self, file):
+		j = 0
+		vocab={}
+		text = []
+		with open(file, 'r') as f:
+			for line in f:
+				text = line.split() #Since only 1 line exists
+
+		for word in text:
+			j+=1
+			if word in vocab:
+				vocab[word]+=1
+				continue
+				#print (word, vocab[word])
+
+			vocab[word] = 1
+
+
+		sorted_vocab = sorted(vocab.items(), key = itemgetter(1))
+		#Also compute probabilities in text
+		prob_vocab =  {}
+		no_vocab={}
+		for key, value in sorted_vocab:
+			#print ("%s %s" % (key, value))
+
+			prob_vocab[key] = (math.sqrt( 10000* float(value)/j ) + 1) * (float(1.0)/(10000* float(value)/j))
+			no_vocab[key] = float(value)
+
+
+		sorted_prob_vocab =  sorted(prob_vocab.items(), key = itemgetter(1))
+		#for key, value in sorted_prob_vocab:
+			#print ("%s %s" % (key, value))
+		print ()
+		print ("Unique: ",len(vocab))
+		print ("Total words: ", j)
+
+		return prob_vocab, no_vocab
+
+
+	def make_training_data(self, file, prob_vocab,no_vocab,n=3 ):
+
+		text = []
+		with open(file ,'r') as f:
+			for line in f:
+				text = line.split()
+		data_raw = []
+		l=0
+		for i in range(n+1, len(text)-n):
+			if (no_vocab[text[i]] <  15):
+				continue
+			l+=1
+			temp_context = [text[j] for j in range(i-n, i+n+1) if (j!=i and no_vocab[text[j]] >= 15)]
+			temp_context.insert(0, text[i])
+			data_raw.append(temp_context)
+
+		print ("Length after removing: ", len(data_raw))
+
+		#Make word to integer encoding
+		int_to_words={}
+		words_to_int = {}
+		x=0
+
+
+		for i, val in enumerate(data_raw):
+			if (val[0] in words_to_int):
+				continue
+			x+=1
+			words_to_int[val[0]] = x
+			int_to_words[x] = val[0]
+
+		print ("Unique after removing: ", x)
+
+		return words_to_int, int_to_words, data_raw
 
 
 class SkipGram:
 	def __init__(self, words_to_int, int_to_words, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
-		np.random.seed(1332)
+		#np.random.seed(1332)
 		self.words_to_int = words_to_int
 		self.model = words_to_int
 		self.int_to_words = int_to_words
@@ -83,8 +168,9 @@ class SkipGram:
 def train(inp, out, dimensions, lr, win, epochs):
 
 	#Preprocess the file
-	prob_vocab , no_vocab = data_utils.compute_vocab(inp)
-	words_to_int, int_to_words, data_raw = data_utils.make_training_data(inp,  prob_vocab, no_vocab,  win)
+	processor = DataProcessor()
+	prob_vocab , no_vocab = processor.compute_vocab(inp)
+	words_to_int, int_to_words, data_raw = processor.make_training_data(inp,  prob_vocab, no_vocab,  win)
 
 	
 	#Create training data

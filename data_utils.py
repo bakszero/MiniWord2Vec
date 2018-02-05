@@ -10,6 +10,7 @@ def remove_new_line(file, out):
 		for line in f:
 			temp =  line.replace('\n', ' ')
 			g.write(temp)
+	print ("Created merged dataset...\n")
 
 
 
@@ -111,7 +112,7 @@ def make_training_data(file, prob_vocab,no_vocab,n=3 ):
 		if (val[0] in words_to_int):
 			continue
 		x+=1
-		words_to_int[val[0]] = x
+		words_to_int[val[0]] = x 	
 		int_to_words[x] = val[0]
 
 	print ("Unique after removing: ", x)
