@@ -158,7 +158,7 @@ class CBoW:
 
 				#Calculate dL/dW
 
-				dw_hidden = np.outer(x, np.dot(w_output, err))
+				dw_hidden = np.outer(x, np.dot(self.w_output, err))
 
 				#Calculate dL/dW'
 				dw_output = np.outer(h,err)
