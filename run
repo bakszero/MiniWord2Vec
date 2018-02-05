@@ -1,1 +1,8 @@
+if [ $1 == "skipgram" ] ;
+then
 python skipgram.py -e 100 -w 3 -d 300 -m a.txt --train data/full_text_sentences_new/merged_sentences.txt
+
+elif [ $1 == "cbow" ];
+then
+python cbow.py -e 100 -w 3 -d 300 -m a.txt --train data/full_text_sentences_new/merged_sentences.txt
+fi;
