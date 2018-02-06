@@ -1,4 +1,4 @@
-import numpy as np 
+import cupy as np 
 import sklearn
 import math
 import sys
@@ -98,6 +98,7 @@ class CBoW:
 		np.random.seed(1332)
 		self.words_to_int = words_to_int
 		self.int_to_words = int_to_words
+		self.model = words_to_int
 		self.X_train =  X_train
 		self.Y_train = Y_train
 		self.vocab_size = len(words_to_int)
@@ -108,7 +109,7 @@ class CBoW:
 		self.w_output = np.random.randn(self.dim, self.vocab_size)
 		#self.onehot = onehot
 		#Uninitialised model as of now
-		self.model= {}
+		#self.model= {}
 
 	def sigmoid(self, theta):
 
@@ -167,6 +168,17 @@ class CBoW:
 				self.w_hidden += -self.lr * dw_hidden
 				self.w_output += -self.lr * dw_output
 				print ("Gradient descent done.." , i, k)
+
+
+			#Update model after each epoch
+			print ("Saving model...")
+			for key, value in words_to_int.items():
+				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
+
+			#Store model after every 2 epochs
+			if (k!=0 and k%2==0):	
+				print ("saveing model...")
+				np.save('skipgram_'+k, self.model)
 
 
 
