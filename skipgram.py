@@ -122,7 +122,8 @@ class SkipGram:
 				h = np.dot(self.w_hidden.T , self.one_hot(self.words_to_int[self.X_train[i]]))
 				output = np.dot(self.w_output.T , h)
 				pred = self.softmax(output)
-				print ("Forward propagation done...",  i, k)
+				print ("---------------")
+				print ("Forward propagation done...",  i, " Epoch: ", k)
 
 				#Backward propagation------
 				err_sum = np.zeros((self.vocab_size,1))
@@ -151,10 +152,10 @@ class SkipGram:
 			for key, value in words_to_int.items():
 				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
 
-			#Store model after every 2 epochs
-			if (k!=0 and k%2==0):	
-				print ("saveing model...")
-				np.save('skipgram_'+k, self.model)
+			#Store model after every epoch
+			#if (k!k%2==0):	
+			print ("saving model...")
+			np.save('./utils/skipgram_'+k, self.model)
 
 def train(inp, out, dimensions, lr, win, epochs):
 

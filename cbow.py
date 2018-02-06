@@ -147,6 +147,8 @@ class CBoW:
 				print ("Forward propagation done...",  i, k)
 
 				'''
+				print ("-----------")
+				print ("Forward propagation done...: ", i, "Epoch: ", k) 
 				#h = np.dot(self.w_hidden.T , onehot(X_train[i])
 				u = np.dot(self.w_output.T , h)
 				pred = self.softmax(u)
@@ -178,7 +180,7 @@ class CBoW:
 			#Store model after every 2 epochs
 			if (k!=0 and k%2==0):	
 				print ("saveing model...")
-				np.save('skipgram_'+k, self.model)
+				np.save('cbow_'+k, self.model)
 
 
 
