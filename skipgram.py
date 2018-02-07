@@ -116,7 +116,7 @@ class SkipGram:
 			print ()
 			print ("No. of training samples: ", len(self.X_train))
 			#For each training example
-			for i in range(len(self.X_train)):
+			for i in range(len(self.X_train)/3):
 
 				#Forward propagation of the neural network-----
 				#Here X_train[i] is a Vx1 vector.
@@ -124,7 +124,7 @@ class SkipGram:
 				output = np.dot(self.w_output.T , h)
 				pred = self.softmax(output)
 				print ("---------------")
-				print ("Forward propagation done...",  str(i)+"/"+str(len(self.X_train)), " Epoch: ", str(k)+"/"+str(self.epochs))
+				print ("Forward propagation done...",  str(i)+"/"+str(len(self.X_train)), " Epoch: ", str(k+1)+"/"+str(self.epochs))
 
 				#Backward propagation------
 				err_sum = np.zeros((self.vocab_size,1))
@@ -133,7 +133,7 @@ class SkipGram:
 					err_sum += (pred - self.one_hot(self.words_to_int[word]))
 
 				#err_sum/= self.vocab_size
-				print ("Calculated error.." , i, k)
+				print ("Calculated error.." , i, k+1)
 
 
 				#Calculate dL/dW
@@ -146,17 +146,17 @@ class SkipGram:
 				self.w_hidden += -self.lr * dw_hidden
 				self.w_output += -self.lr * dw_output
 
-				print ("Gradient descent done.." , i, k)
+				print ("Gradient descent done.." , i, k+1)
 
 			#Update model after each epoch
 			print ("Saving model...")
-			for key, value in words_to_int.items():
+			for key, value in self.words_to_int.items():
 				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
 
 			#Store model after every epoch
 			#if (k!k%2==0):	
 			print ("Model to npy file...")
-			np.save('./utils/skipgram_'+k, self.model)
+			np.save('./utils/skipgram_'+str(k), self.model)
 
 def train(inp, out, dimensions, lr, win, epochs):
 

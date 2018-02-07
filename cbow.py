@@ -131,7 +131,7 @@ class CBoW:
 		for k in range(self.epochs):
 			print ("We are at epoch : ", k+1)
 			#For each training example
-			for i in range(self.vocab_size):
+			for i in range(len(self.X_train)):
 
 				#Forward propagation of the neural network-----
 
@@ -151,7 +151,7 @@ class CBoW:
 
 				'''
 				print ("-----------")
-				print ("Forward propagation done...: ", i, "Epoch: ", k) 
+				print ("Forward propagation done...: ", i, "Epoch: ", k+1) 
 				#h = np.dot(self.w_hidden.T , onehot(X_train[i])
 				u = np.dot(self.w_output.T , h)
 				pred = self.softmax(u)
@@ -177,13 +177,13 @@ class CBoW:
 
 			#Update model after each epoch
 			print ("Saving model...")
-			for key, value in words_to_int.items():
+			for key, value in self.words_to_int.items():
 				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
 
 			#Store model after every epoch
 			
 			print ("Model to npy file...")
-			np.save('./utils/cbow_'+k, self.model)
+			np.save('./utils/cbow_'+str(k), self.model)
 
 
 
