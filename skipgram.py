@@ -110,6 +110,7 @@ class SkipGram:
 
 	def build_skipgram_model(self):
 		#Iterate over epochs
+		print ("No. of training samples are: ", len(self.X_train))
 		for k in range(self.epochs):
 			print ("We are at epoch : ", k)
 			print ()
@@ -123,7 +124,7 @@ class SkipGram:
 				output = np.dot(self.w_output.T , h)
 				pred = self.softmax(output)
 				print ("---------------")
-				print ("Forward propagation done...",  i, " Epoch: ", k)
+				print ("Forward propagation done...",  str(i)+"/"+str(len(self.X_train)), " Epoch: ", str(k)+"/"+str(self.epochs))
 
 				#Backward propagation------
 				err_sum = np.zeros((self.vocab_size,1))
@@ -154,7 +155,7 @@ class SkipGram:
 
 			#Store model after every epoch
 			#if (k!k%2==0):	
-			print ("saving model...")
+			print ("Model to npy file...")
 			np.save('./utils/skipgram_'+k, self.model)
 
 def train(inp, out, dimensions, lr, win, epochs):

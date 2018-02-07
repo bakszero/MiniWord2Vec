@@ -121,7 +121,10 @@ class CBoW:
 
 
 	def one_hot(self, n):
-		return (np.eye(self.vocab_size)[n]).reshape(self.vocab_size,1)
+		temp = np.zeros((self.vocab_size, 1))
+		temp[n] =1.
+		return temp
+		#return (np.eye(self.vocab_size)[n]).reshape(self.vocab_size,1)
 	
 	def build_cbow_model(self):
 		#Iterate over epochs
@@ -177,10 +180,10 @@ class CBoW:
 			for key, value in words_to_int.items():
 				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
 
-			#Store model after every 2 epochs
-			if (k!=0 and k%2==0):	
-				print ("saveing model...")
-				np.save('cbow_'+k, self.model)
+			#Store model after every epoch
+			
+			print ("Model to npy file...")
+			np.save('./utils/cbow_'+k, self.model)
 
 
 
