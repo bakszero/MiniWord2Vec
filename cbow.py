@@ -123,7 +123,7 @@ class CBoW:
 
 	def one_hot(self, n):
 		temp = np.zeros((self.vocab_size, 1))
-		temp[n] =1
+		temp[n] =1.
 		return temp
 		#return (np.eye(self.vocab_size)[n]).reshape(self.vocab_size,1)
 	
