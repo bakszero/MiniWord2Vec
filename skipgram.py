@@ -4,7 +4,7 @@ import math
 import sys
 import argparse
 from operator import itemgetter
-
+import copy
 
 class DataProcessor:
 	def remove_new_line(self, file, out):
@@ -67,9 +67,10 @@ class DataProcessor:
 		for i, val in enumerate(data_raw):
 			if (val[0] in words_to_int):
 				continue
-			x+=1
+			#x+=1
 			words_to_int[val[0]] = x
 			int_to_words[x] = val[0]
+			x+=1
 		print ("Unique after removing: ", x)
 
 		return words_to_int, int_to_words, data_raw
@@ -79,15 +80,15 @@ class SkipGram:
 	def __init__(self, words_to_int, int_to_words, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
 		#np.random.seed(1332)
-		self.words_to_int = words_to_int
-		self.model = words_to_int
-		self.int_to_words = int_to_words
-		self.X_train =  X_train
-		self.Y_train = Y_train
+		self.words_to_int = copy.deepcopy(words_to_int)
+		self.model = copy.deepcopy(words_to_int)
+		self.int_to_words = copy.deepcopy(int_to_words)
+		self.X_train =  copy.deepcopy(X_train)
+		self.Y_train = copy.deepcopy(Y_train)
 		self.vocab_size = len(words_to_int)
-		self.lr = lr #Learning rate
-		self.dim = dim #Dimensions for our trained vectors
-		self.epochs = epochs
+		self.lr = copy.deepcopy(lr) #Learning rate
+		self.dim = copy.deepcopy(dim) #Dimensions for our trained vectors
+		self.epochs = copy.deepcopy(epochs)
 		self.w_hidden = np.random.randn(self.vocab_size, self.dim)
 		self.w_output = np.random.randn(self.dim, self.vocab_size)
 		#self.onehot = onehot
@@ -104,7 +105,7 @@ class SkipGram:
 
 	def one_hot(self, n):
 		temp = np.zeros((self.vocab_size, 1))
-		temp[n] =1.
+		temp[n] =1
 		return temp
 		#return (np.eye(self.vocab_size)[n]).reshape(self.vocab_size,1)
 
@@ -116,15 +117,18 @@ class SkipGram:
 			print ()
 			print ("No. of training samples: ", len(self.X_train))
 			#For each training example
-			for i in range(len(self.X_train)/3):
+			for i in range(len(self.X_train)/20):
 
-				#Forward propagation of the neural network-----
+				#Forward propagation of the SkipGram network-----
 				#Here X_train[i] is a Vx1 vector.
+				#print "self.X_train[i] is ", self.X_train[i]
+				#print "self.words_to_int[i] is ", self.words_to_int[self.X_train[i]]
+
 				h = np.dot(self.w_hidden.T , self.one_hot(self.words_to_int[self.X_train[i]]))
 				output = np.dot(self.w_output.T , h)
 				pred = self.softmax(output)
 				print ("---------------")
-				print ("Forward propagation done...",  str(i)+"/"+str(len(self.X_train)), " Epoch: ", str(k+1)+"/"+str(self.epochs))
+				print ("Forward propagation done SKIPGRAM...",  str(i)+"/"+str(len(self.X_train)), " Epoch: ", str(k+1)+"/"+str(self.epochs))
 
 				#Backward propagation------
 				err_sum = np.zeros((self.vocab_size,1))
@@ -150,8 +154,8 @@ class SkipGram:
 
 			#Update model after each epoch
 			print ("Saving model...")
-			for key, value in self.words_to_int.items():
-				self.model[key] = self.w_hidden[value].reshape(1, self.w_hidden.shape[1])
+			for key, value in self.int_to_words.items():
+				self.model[value] = self.w_hidden[key].reshape(1, self.w_hidden.shape[1])
 
 			#Store model after every epoch
 			#if (k!k%2==0):	

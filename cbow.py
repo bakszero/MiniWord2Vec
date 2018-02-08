@@ -4,6 +4,7 @@ import math
 import sys
 import argparse
 from operator import itemgetter
+import copy
 
 class DataProcessor:
 
@@ -82,9 +83,10 @@ class DataProcessor:
 		for i, val in enumerate(data_raw):
 			if (val[0] in words_to_int):
 				continue
-			x+=1
+			#x+=1
 			words_to_int[val[0]] = x
 			int_to_words[x] = val[0]
+			x+=1
 
 		print ("Unique after removing: ", x)
 
@@ -95,19 +97,18 @@ class CBoW:
 	def __init__(self, words_to_int, int_to_words, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
 		#Input will be flipped for skipgram, but we maintain 2 different classes for cleaner comparison of the models later!
-		np.random.seed(1332)
-		self.words_to_int = words_to_int
-		self.int_to_words = int_to_words
-		self.model = words_to_int
-		self.X_train =  X_train
-		self.Y_train = Y_train
+		#np.random.seed(1332)
+		self.words_to_int = copy.deepcopy(words_to_int)
+		self.model = copy.deepcopy(words_to_int)
+		self.int_to_words = copy.deepcopy(int_to_words)
+		self.X_train =  copy.deepcopy(X_train)
+		self.Y_train = copy.deepcopy(Y_train)
 		self.vocab_size = len(words_to_int)
-		self.lr = lr #Learning rate
-		self.dim = dim #Dimensions for our trained vectors
-		self.epochs = epochs
+		self.lr = copy.deepcopy(lr) #Learning rate
+		self.dim = copy.deepcopy(dim) #Dimensions for our trained vectors
+		self.epochs = copy.deepcopy(epochs)
 		self.w_hidden = np.random.randn(self.vocab_size, self.dim)
 		self.w_output = np.random.randn(self.dim, self.vocab_size)
-		#self.onehot = onehot
 		#Uninitialised model as of now
 		#self.model= {}
 
@@ -122,7 +123,7 @@ class CBoW:
 
 	def one_hot(self, n):
 		temp = np.zeros((self.vocab_size, 1))
-		temp[n] =1.
+		temp[n] =1
 		return temp
 		#return (np.eye(self.vocab_size)[n]).reshape(self.vocab_size,1)
 	
@@ -131,9 +132,9 @@ class CBoW:
 		for k in range(self.epochs):
 			print ("We are at epoch : ", k+1)
 			#For each training example
-			for i in range(len(self.X_train)):
+			for i in range(len(self.X_train)/20):
 
-				#Forward propagation of the neural network-----
+				#Forward propagation of the CBOW network-----
 
 				#Take average
 				x = np.zeros((self.vocab_size, 1))
@@ -151,7 +152,7 @@ class CBoW:
 
 				'''
 				print ("-----------")
-				print ("Forward propagation done...: ", i, "Epoch: ", k+1) 
+				print ("Forward propagation done CBOW...: ", i, "Epoch: ", k+1) 
 				#h = np.dot(self.w_hidden.T , onehot(X_train[i])
 				u = np.dot(self.w_output.T , h)
 				pred = self.softmax(u)
@@ -160,7 +161,7 @@ class CBoW:
 				#err_sum = np.zeros((self.vocab_size,1))
 
 				err = pred - self.one_hot(self.words_to_int[self.Y_train[i]])
-				print ("Calculated error.." , i, k)
+				print ("Calculated error.." , i, k+1)
 
 				#Calculate dL/dW
 
@@ -172,7 +173,7 @@ class CBoW:
 				#Gradient descent
 				self.w_hidden += -self.lr * dw_hidden
 				self.w_output += -self.lr * dw_output
-				print ("Gradient descent done.." , i, k)
+				print ("Gradient descent done.." , i, k+1)
 
 
 			#Update model after each epoch
@@ -183,7 +184,7 @@ class CBoW:
 			#Store model after every epoch
 			
 			print ("Model to npy file...")
-			np.save('./utils/cbow_'+str(k), self.model)
+			np.save('./utils/cbow_new_'+str(k), self.model)
 
 
 
