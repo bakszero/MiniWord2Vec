@@ -70,7 +70,7 @@ def find_similar(file, word):
 	vec = doc.item()
 	word_vec = vec.get(word)
 	dist = {}
-	print type(vec)
+	#print type(vec)
 	for element in vec.items():
 		#print element[0]
 		
@@ -80,7 +80,7 @@ def find_similar(file, word):
 		arr = element[1]
 		cos = cosine_similarity(word_vec, arr) 
 		dist[element[0]] = cos
-		print element[0] , dist[element[0]]
+		print (element[0] , dist[element[0]])
 
 	sorted_dist  = sorted(dist.items(), key =  itemgetter(1))
 	print (sorted_dist)
