@@ -3,7 +3,9 @@ import sys
 from operator import itemgetter
 import math
 import numpy as np
-
+import cupy as cp
+from cupy.linalg import norm
+import sys
 
 def remove_new_line(file, out):
 	with open(file, 'r') as f, open(out, 'w+') as g:
@@ -55,6 +57,35 @@ def compute_vocab(file):
 	print ("Total words: ", j)
 
 	return prob_vocab, no_vocab
+
+def cosine_similarity(x, y):
+	a = x.reshape((x.shape[1],))
+	b = y.reshape((y.shape[1],))
+	return cp.inner(a,b) / norm(a)*norm(b)
+
+
+def find_similar(file, word):
+	doc = np.load(file)
+
+	vec = doc.item()
+	word_vec = vec.get(word)
+	dist = {}
+	print type(vec)
+	for element in vec.items():
+		#print element[0]
+		
+		if (element[0] == word):
+			continue
+
+		arr = element[1]
+		cos = cosine_similarity(word_vec, arr) 
+		dist[element[0]] = cos
+		print element[0] , dist[element[0]]
+
+	sorted_dist  = sorted(dist.items(), key =  itemgetter(1))
+	print (sorted_dist)
+
+
 
 
 def make_training_data(file, prob_vocab,no_vocab,n=3 ):
@@ -145,3 +176,5 @@ def make_training_data(file, prob_vocab,no_vocab,n=3 ):
 #prob_vocab , no_vocab = compute_vocab(sys.argv[1])
 
 #make_training_data(sys.argv[1],  prob_vocab, no_vocab,  3)
+
+find_similar(sys.argv[1], sys.argv[2])

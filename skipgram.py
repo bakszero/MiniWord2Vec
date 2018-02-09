@@ -117,7 +117,7 @@ class SkipGram:
 			print ()
 			print ("No. of training samples: ", len(self.X_train))
 			#For each training example
-			for i in range(len(self.X_train)/20):
+			for i in range(len(self.X_train)):
 
 				#Forward propagation of the SkipGram network-----
 				#Here X_train[i] is a Vx1 vector.

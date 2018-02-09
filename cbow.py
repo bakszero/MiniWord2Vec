@@ -132,7 +132,7 @@ class CBoW:
 		for k in range(self.epochs):
 			print ("We are at epoch : ", k+1)
 			#For each training example
-			for i in range(len(self.X_train)/20):
+			for i in range(len(self.X_train)):
 
 				#Forward propagation of the CBOW network-----
 
