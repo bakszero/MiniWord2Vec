@@ -40,4 +40,5 @@ Parameters that can be edited:
 - No. of epochs to train the data on, default: 100
 - Window size for CBoW, default: 3
 
-~                             
+## Output
+Currently stores the outputs in the form of ```.npy``` files after each epoch in the ```utils/``` folder.         
