@@ -10,7 +10,10 @@ Support for Python 2 and 3. Install the package requirements via
 pip install -r requirements.txt
 ```
 ## Note
-Requires cupy to run on GPU for fast computations, and that is the default behaviour. Replace ```import cupy as np``` with ```import numpy as np``` if you wish to run it on the CPU.  
+Requires cupy to run on GPU for fast computations, and that is the default behaviour.
+ ```cupy``` requires CUDA related libraries, cuDNN and NCCL, to be installed before installing CuPy.
+
+Replace ```import cupy as np``` with ```import numpy as np``` if you wish to run it on the CPU.  
  
 # Data
  
