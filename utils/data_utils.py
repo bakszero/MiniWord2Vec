@@ -72,7 +72,7 @@ def find_similar(file, word):
 	vec = doc.item()
 	word_vec = vec.get(word)
 	dist = {}
-	print type(vec)
+	#print type(vec)
 	for element in vec.items():
 		#print element[0]
 		
