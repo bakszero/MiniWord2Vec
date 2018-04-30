@@ -60,8 +60,10 @@ def compute_vocab(file):
 
 def cosine_similarity(x, y):
 	a = x.reshape((x.shape[1],))
+	#print (a.shape)
 	b = y.reshape((y.shape[1],))
-	return cp.inner(a,b) / norm(a)*norm(b)
+	#print (b.shape)
+	return cp.inner(a,b) / (norm(a)*norm(b))
 
 
 def find_similar(file, word):
@@ -80,10 +82,15 @@ def find_similar(file, word):
 		arr = element[1]
 		cos = cosine_similarity(word_vec, arr) 
 		dist[element[0]] = cos
-		print element[0] , dist[element[0]]
+		#print element[0] , dist[element[0]]
 
-	sorted_dist  = sorted(dist.items(), key =  itemgetter(1))
-	print (sorted_dist)
+	sorted_dist  = sorted(dist.items(), key =  itemgetter(1), reverse=True)
+	d=0
+	for i,j in enumerate(sorted_dist):
+            if (d>10):
+                break
+            d+=1 
+            print (i , j)
 
 
 

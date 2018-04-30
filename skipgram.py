@@ -56,7 +56,7 @@ class DataProcessor:
 				continue
 			l+=1
 			temp_context = [text[j] for j in range(i-n, i+n+1) if (j!=i and no_vocab[text[j]] >= 15)]
-			temp_context.insert(0, text[i])
+			temp_context.insert(0, text[i]) # Add the major word at the start of the list.
 			data_raw.append(temp_context)
 		print ("Length after removing: ", len(data_raw))
 
@@ -77,7 +77,7 @@ class DataProcessor:
 
 
 class SkipGram:
-	def __init__(self, words_to_int, int_to_words, X_train, Y_train,  lr=0.01, dim=300, epochs=100, print_metrics=True):
+	def __init__(self, words_to_int, int_to_words, X_train, Y_train, lr=0.01, dim=300, epochs=100, print_metrics=True):
 		
 		#np.random.seed(1332)
 		self.words_to_int = copy.deepcopy(words_to_int)
