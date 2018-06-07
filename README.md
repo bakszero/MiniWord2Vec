@@ -14,8 +14,10 @@ Requires ```cupy``` to run on GPU for fast computations, and that is the default
  ```cupy``` requires CUDA related libraries, cuDNN and NCCL, to be installed before installing CuPy.
 
 Replace ```python 
-import cupy as np``` with ```python 
-import numpy as np``` if you wish to run it on the CPU.  
+import cupy as np
+``` with ```python 
+import numpy as np
+``` if you wish to run it on the CPU.  
  
 ## Data
  
