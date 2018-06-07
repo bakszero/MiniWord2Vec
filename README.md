@@ -6,7 +6,7 @@ This application is an implementation of both the skipgram and cbow techniques u
 ## Requirements
 
 Support for Python 2 and 3. Install the package requirements via
-```bash
+```shell
 pip install -r requirements.txt
 ```
 ## Note
@@ -24,7 +24,7 @@ The training data can be found in the ```data/``` folder.
 
 For training, use the run script.
 For CBoW, use:
-```bash
+```shell
 ./run cbow
 ```
 
