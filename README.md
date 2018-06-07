@@ -13,7 +13,7 @@ pip install -r requirements.txt
 Requires ```cupy``` to run on GPU for fast computations, and that is the default behaviour.
  ```cupy``` requires CUDA related libraries, cuDNN and NCCL, to be installed before installing CuPy.
 
-Replace ```import cupy as np``` with ```import numpy as np``` if you wish to run it on the CPU.  
+Replace ```python import cupy as np``` with ```python import numpy as np``` if you wish to run it on the CPU.  
  
 ## Data
  
